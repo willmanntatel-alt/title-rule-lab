@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {measure,parseRule,analyze,buildReport} from './measurement.mjs';
+test('four measurements distinguish a single supplementary emoji',()=>assert.deepEqual(measure('A💧'),{codepoints:2,utf16:3,utf8:5,graphemes:2}));
+test('Chinese bytes are not character counts',()=>assert.deepEqual(measure('便携杯'),{codepoints:3,utf16:3,utf8:9,graphemes:3}));
+test('Thai combining characters remain in displayed clusters',()=>assert.deepEqual(measure('แก้วน้ำ'),{codepoints:7,utf16:7,utf8:21,graphemes:4}));
+test('a decomposed accent is preserved, rather than normalized',()=>{assert.deepEqual(measure('e\u0301'),{codepoints:2,utf16:2,utf8:3,graphemes:1});assert.equal(buildReport('e\u0301','graphemes','1').title,'e\u0301');});
+test('one emoji family is never split by a UTF-16 overflow preview',()=>{const r=analyze('👨‍👩‍👧‍👦','utf16','10');assert.equal(r.excess,1);assert.equal(r.parts.length,1);assert.equal(r.parts[0].text,'👨‍👩‍👧‍👦');assert.equal(r.parts[0].overflow,true);});
+test('same title changes outcome when the entered measurement changes',()=>{assert.equal(analyze('Cup 👨‍👩‍👧‍👦','codepoints','12').status,'WITHIN_RULE');assert.equal(analyze('Cup 👨‍👩‍👧‍👦','utf16','12').status,'OVER_LIMIT');});
+test('exact boundary is allowed and trailing characters are retained',()=>{const r=analyze('ABC ','codepoints','3');assert.equal(r.excess,1);assert.equal(r.parts.map(x=>x.text).join(''),'ABC ');assert.equal(r.parts.at(-1).overflow,true);assert.equal(analyze('ABC','codepoints','3').status,'WITHIN_RULE');});
+test('CRLF stays unchanged and is counted in each selected unit',()=>assert.deepEqual(measure('A\r\nB'),{codepoints:4,utf16:4,utf8:4,graphemes:3}));
+test('invalid limits and prototype-named units cannot become valid rules',()=>{for(const x of ['',0,-1,'1.5','1e3','Infinity','01','1000001','9007199254740993'])assert.throws(()=>parseRule('codepoints',x));for(const u of ['toString','__proto__','characters'])assert.throws(()=>parseRule(u,'10'));});
+test('blank titles cannot produce a successful exported review',()=>{assert.equal(analyze('   ','utf8','3').status,'EMPTY_TITLE');assert.throws(()=>buildReport('','utf8','3'));});
+test('export contains literal markup, original rule reference and deterministic timestamp',()=>{const r=buildReport('<script>x</script>','utf8','100','demo','2026-10-14T00:00:00Z');assert.equal(r.title,'<script>x</script>');assert.equal(r.rule.reference,'demo');assert.equal(r.observedAt,'2026-10-14T00:00:00Z');assert.equal(JSON.parse(JSON.stringify(r)).title,r.title);});

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Title Rule Lab</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<header><a class="brand" href="#main"><span class="logo" aria-hidden="true">T<span>↗</span></span> Title Rule Lab</a><span class="badge">LOCAL TEXT WORKBENCH</span></header>
+<main id="main">
+  <section class="intro"><div><p class="eyebrow">MEASURE BEFORE YOU PUBLISH</p><h1>One title.<br>Four ways to count.</h1><p class="lead">A limit is only useful when you know what it counts.<br>Check your rule, keep your wording intact.</p></div><p class="aside">Chinese. Thai. English. Emoji.<br>The same text can have very different lengths.</p></section>
+  <section class="workbench" aria-label="Title checking workbench">
+    <div class="editor panel">
+      <div class="section-title"><span class="step">01</span><h2>Your title</h2><span id="input-size">0 / 2,000</span></div>
+      <label for="title">Paste or write the exact text</label>
+      <textarea id="title" maxlength="2000" rows="4" spellcheck="false" placeholder="Start with the title you want to check…" aria-describedby="privacy"></textarea>
+      <p class="hint" id="privacy">Processed locally. Never sent to a remote service or saved.</p>
+      <div class="samples"><span>Try a demo</span><button id="emoji-demo" type="button">Emoji family</button><button id="thai-demo" type="button">Thai text</button><button id="clear" type="button">Clear</button></div>
+      <p class="hint" id="demo-note">Demo limits are illustrative, never marketplace policies.</p>
+      <hr>
+      <div class="section-title"><span class="step">02</span><h2>Your rule</h2></div>
+      <div class="rule-fields"><div><label for="limit">Maximum length</label><input id="limit" type="text" inputmode="numeric" placeholder="Enter the real limit" maxlength="12" autocomplete="off"></div><div><label for="unit">What does it count?</label><select id="unit"><option value="codepoints">Code points</option><option value="utf16">UTF-16 units</option><option value="utf8">UTF-8 bytes</option><option value="graphemes">Displayed characters</option></select></div></div>
+      <label for="reference">Rule source or note <span class="optional">optional</span></label><input id="reference" maxlength="300" placeholder="Where did you verify this rule?">
+      <p class="hint">Enter a verified rule yourself. This tool does not certify platform compliance.</p>
+    </div>
+    <div class="results panel">
+      <div class="section-title"><span class="step">03</span><h2>The measurement</h2></div>
+      <div class="counts" aria-label="Four text measurements">
+        <div data-metric="codepoints"><strong id="count-codepoints">0</strong><span>Code points</span></div><div data-metric="utf16"><strong id="count-utf16">0</strong><span>UTF-16 units</span></div><div data-metric="utf8"><strong id="count-utf8">0</strong><span>UTF-8 bytes</span></div><div data-metric="graphemes"><strong id="count-graphemes">0</strong><span>Displayed characters</span></div>
+      </div>
+      <div id="status-box" class="status neutral" role="status" aria-live="polite"><span id="status-label">Enter your rule</span><p id="status-detail">Choose a measurement and enter a positive whole-number limit.</p></div>
+      <label class="preview-label" for="preview">Overflow preview</label><div id="preview" class="preview" aria-label="Title overflow preview">Your exact title appears here.</div>
+      <p class="hint">Highlighted text intersects or follows the first excess unit. Whole displayed characters stay together, even when the boundary falls inside one.</p>
+      <div class="export-controls"><button id="build-report" type="button" disabled>Prepare review JSON <span aria-hidden="true">↗</span></button><a id="download" hidden download="title-rule-review.json">Download JSON</a></div>
+      <p id="export-note" class="hint">The record preserves your exact title and the rule you entered.</p>
+    </div>
+  </section>
+  <section class="definitions"><h2>What are you counting?</h2><div class="definition-grid"><article><span>01</span><h3>Code points</h3><p>Unicode values. An emoji family includes several code points joined together.</p></article><article><span>02</span><h3>UTF-16 units</h3><p>JavaScript’s string length. Many emoji use two units per code point.</p></article><article><span>03</span><h3>UTF-8 bytes</h3><p>Encoded data size. Chinese and Thai characters commonly use multiple bytes.</p></article><article><span>04</span><h3>Displayed characters</h3><p>Grapheme clusters: letters with combining marks and joined emoji are kept together.</p></article></div></section>
+  <details id="report-panel" hidden><summary>Inspect the current JSON record</summary><pre id="report-json"></pre></details>
+  <footer>Original proof of concept · Built with substantial AI assistance · No rewriting, translation or policy lookup.<br>Unsaved input is lost on refresh. Grapheme segmentation can vary with browser Unicode versions.</footer>
+</main><script type="module" src="app.mjs"></script></body></html>

@@ -1,0 +1,12 @@
+/devpost/learner-profile.md
+/.agents/
+.env
+.env.*
+!.env.example
+/private/
+/demo-frames/
+*.mp4
+*account*.png
+*authorization*.png
+/STATUS.md
+/private-export-verification.json
